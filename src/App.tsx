@@ -30,7 +30,7 @@ function App() {
         (response: DOMMessageResponse) => {
           setTitle(response.title);
           setHeadlines(response.headlines);
-        });
+      });
     });
   });
 

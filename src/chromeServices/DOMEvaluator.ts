@@ -1,5 +1,5 @@
-import { DOMMessage, DOMMessageResponse } from '../types';
- 
+import { DOMMessage, DOMMessageResponse, DOMLOADMESSAGE } from '../types';
+
 // Function called when a new message is received
 const messagesFromReactAppListener = (
    msg: DOMMessage,

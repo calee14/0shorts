@@ -8,19 +8,26 @@
     "default_title": "Open the popup"
   },
   "permissions": [
-    "activeTab"
+    "activeTab",
+    "tabs",
+    "webRequest",
+    "webNavigation"
   ],
   "icons": {
       "16": "logo192.png",
       "48": "logo192.png",
       "128": "logo512.png"
     },
-  "theme_color": "#000000",
-  "background_color": "#ffffff",
   "content_scripts": [
     {
       "matches": ["http://*/*", "https://*/*"],
       "js": ["./static/js/content.js"]
     }
- ]
+  ],
+  "background": {
+    "service_worker": "background.js"
+  },
+  "host_permissions": [
+    "<all_urls>"
+  ]
 }
