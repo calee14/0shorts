@@ -1,1 +1,1 @@
-(()=>{"use strict";console.log("content.ts")})();
+(()=>{"use strict";({144:function(){var n=this&&this.__awaiter||function(n,t,e,o){return new(e||(e=Promise))((function(i,c){function r(n){try{u(o.next(n))}catch(n){c(n)}}function s(n){try{u(o.throw(n))}catch(n){c(n)}}function u(n){var t;n.done?i(n.value):(t=n.value,t instanceof e?t:new e((function(n){n(t)}))).then(r,s)}u((o=o.apply(n,t||[])).next())}))};console.log("content.ts"),n(void 0,void 0,void 0,(function*(){const n=yield chrome.runtime.sendMessage({greeting:"hello"});console.log(n)}))}})[144]()})();

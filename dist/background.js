@@ -1,1 +1,1 @@
-(()=>{"use strict";console.log("background.ts"),chrome.runtime.onMessageExternal.addListener((function(e,o,t){console.log(o.tab?"from a content script:"+o.tab.url:"from the extension"),"hello"===e.greeting&&t({farewell:"goodbye"})}))})();
+(()=>{"use strict";console.log("background.ts"),chrome.runtime.onMessage.addListener((function(e,o,t){console.log(o.tab?"from a content script:"+o.tab.url:"from the extension"),"hello"===e.greeting&&t({farewell:"goodbye"})}))})();
