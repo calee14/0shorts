@@ -1,1 +1,1 @@
-(()=>{"use strict";let e=!1;function o(e){document.body.style.backgroundColor=e}console.log("hello there"),chrome.action.onClicked.addListener((t=>{e=!e,console.log("hi"),chrome.runtime.sendMessage({action:"iconClicked"});const c=e?"orange":"white";chrome.scripting.executeScript({target:{tabId:t.id?t.id:-1},func:o,args:[c]}).then()}))})();
+(()=>{"use strict";console.log("background.ts"),chrome.runtime.onMessageExternal.addListener((function(e,o,t){console.log(o.tab?"from a content script:"+o.tab.url:"from the extension"),"hello"===e.greeting&&t({farewell:"goodbye"})}))})();
