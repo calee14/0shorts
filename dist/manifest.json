@@ -10,10 +10,21 @@
   "background": {
     "service_worker": "background.js"
   },
+  "declarative_net_request": {
+    "rule_resources": [
+      {
+        "id": "block_sites",
+        "enabled": true,
+        "path": "rules.json"
+      }
+    ]
+  },
   "permissions": [
     "activeTab",
     "tabs",
-    "scripting"
+    "scripting",
+    "declarativeNetRequest", 
+    "declarativeNetRequestFeedback"
   ],
   "icons": {
     "16": "logo192.png",

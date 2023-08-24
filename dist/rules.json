@@ -4,7 +4,7 @@
       "priority": 1,
       "action": { "type": "block" },
       "condition": {
-        "urlFilter": "||example.com",
+        "urlFilter": "||instagram.com",
         "resourceTypes": ["main_frame"]
       }
     }

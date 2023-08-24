@@ -19,8 +19,8 @@ console.log('content.ts');
 // );
 
 // send message to background.ts
-(async () => {
-    const response = await chrome.runtime.sendMessage({greeting: "hello"});
-    // do something with response here, not outside the function
-    console.log(response);
-})();
+// (async () => {
+//     const response = await chrome.runtime.sendMessage({greeting: "hello"});
+//     // do something with response here, not outside the function
+//     console.log(response);
+// })();
