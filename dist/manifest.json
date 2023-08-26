@@ -27,9 +27,9 @@
     "declarativeNetRequestFeedback"
   ],
   "icons": {
-    "16": "logo192.png",
-    "48": "logo192.png",
-    "128": "logo512.png"
+    "16": "0192.png",
+    "48": "0192.png",
+    "128": "0512.png"
   },
   "content_scripts": [
     {
