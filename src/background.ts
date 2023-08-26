@@ -7,6 +7,8 @@
  * thus they can receive messages sent from the content.ts scripts.
  */
 
+import { DNRRule } from './types'
+
 console.log('background.ts');
 
 chrome.declarativeNetRequest.onRuleMatchedDebug.addListener((e) => {
@@ -41,3 +43,44 @@ chrome.runtime.onMessage.addListener(
             sendResponse({ farewell: "goodbye" });
     }
 );
+
+chrome.runtime.onInstalled.addListener(async (details) => {
+    if(details.reason === "install") {
+        await chrome.storage.local.set({
+            blockedUrls: ['||facebook.com', '||instagram.com', '||tikok.com', '||twitter.com', '||youtube.com', '||tumblr.com', '||netflix.com', '||max.com'],
+            unblockedUrls: []
+        });
+
+        const storageObj = await chrome.storage.local.get('blockedUrls');
+        const blockedUrls: string[] = storageObj['blockedUrls'];
+
+        const rules: DNRRule[] = [];
+        var counter = 0
+        blockedUrls.forEach((url: string) => {
+            const newRule: DNRRule = {
+                id: 100+counter,
+                priority: 1,
+                action: {
+                    type: "redirect",
+                    redirect: { url: "https://google.com" }
+                },
+                condition: {
+                    urlFilter: url,
+                    resourceTypes: [
+                        "main_frame"
+                    ]
+                }
+            };
+            counter += 1;
+            rules.push(newRule);
+        })
+        // get existing rules
+        const existingRules = await chrome.declarativeNetRequest.getDynamicRules();
+        // remove existing rules and add base rules
+        const updateRuleOptions: chrome.declarativeNetRequest.UpdateRuleOptions = {
+            removeRuleIds: existingRules.map((rule) => rule.id),
+            addRules: rules as chrome.declarativeNetRequest.Rule[]
+        }
+        await chrome.declarativeNetRequest.updateDynamicRules(updateRuleOptions);
+    }
+})

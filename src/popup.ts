@@ -8,6 +8,9 @@ import { DNRRule } from './types'
 console.log('popup.ts');
 
 (async () => {
+    const blockedUrls = await chrome.storage.local.get('blockedUrls');
+    console.log(blockedUrls)
+
     const existingRules = await chrome.declarativeNetRequest.getDynamicRules();
     const yesInstagramId: DNRRule = {
         id: 101,
@@ -26,7 +29,7 @@ console.log('popup.ts');
         removeRuleIds: existingRules.map((rule) => rule.id),
         addRules: [yesInstagramId as chrome.declarativeNetRequest.Rule]
     }
-    const currentRules = await chrome.declarativeNetRequest.updateDynamicRules(updateRuleOptions);
+    // const currentRules = await chrome.declarativeNetRequest.updateDynamicRules(updateRuleOptions);
     // const oldRules = await chrome.declarativeNetRequest.getEnabledRulesets();
     console.log(existingRules)
 })();

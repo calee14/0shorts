@@ -6,7 +6,10 @@ export type DNRRule = {
 }
 
 export type DNRRuleAction = { 
-    type: string
+    type: string,
+    redirect?: {
+        url: string
+    }
 }
 export type DNRRuleCondition = {
     urlFilter: string,
