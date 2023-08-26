@@ -8,30 +8,41 @@ import { DNRRule } from './types'
 console.log('popup.ts');
 
 (async () => {
-    const blockedUrls = await chrome.storage.local.get('blockedUrls');
-    console.log(blockedUrls)
+    const storageObj = await chrome.storage.local.get('blockedUrls');
+    const blockedUrls: string[] = storageObj['blockedUrls'];
+    const unblockedUrls = ["||facebook.com"]// await chrome.storage.local.get('unblockedUrls');
+    console.log(blockedUrls, unblockedUrls)
+
+    const rules: DNRRule[] = [];
+    var counter = 0;
+    blockedUrls.forEach((url: string) => {
+        if(unblockedUrls.indexOf(url) > -1) return;
+        console.log(url, url in unblockedUrls)
+        const newRule: DNRRule = {
+            id: 100+counter,
+            priority: 1,
+            action: {
+                type: "redirect",
+                redirect: { url: "https://google.com" }
+            },
+            condition: {
+                urlFilter: url,
+                resourceTypes: [
+                    "main_frame"
+                ]
+            }
+        };
+        counter += 1;
+        rules.push(newRule);
+    });
 
     const existingRules = await chrome.declarativeNetRequest.getDynamicRules();
-    const yesInstagramId: DNRRule = {
-        id: 101,
-        priority: 2,
-        action: {
-            type: "allow"
-        },
-        condition: {
-            urlFilter: "||youtube.com",
-            resourceTypes: [
-                "main_frame"
-            ]
-        }
-    }
     const updateRuleOptions: chrome.declarativeNetRequest.UpdateRuleOptions = {
         removeRuleIds: existingRules.map((rule) => rule.id),
-        addRules: [yesInstagramId as chrome.declarativeNetRequest.Rule]
+        addRules: rules as chrome.declarativeNetRequest.Rule[]
     }
-    // const currentRules = await chrome.declarativeNetRequest.updateDynamicRules(updateRuleOptions);
-    // const oldRules = await chrome.declarativeNetRequest.getEnabledRulesets();
-    console.log(existingRules)
+    await chrome.declarativeNetRequest.updateDynamicRules(updateRuleOptions);
+
 })();
 
 // sends message to content script

@@ -55,7 +55,7 @@ chrome.runtime.onInstalled.addListener(async (details) => {
         const blockedUrls: string[] = storageObj['blockedUrls'];
 
         const rules: DNRRule[] = [];
-        var counter = 0
+        var counter = 0;
         blockedUrls.forEach((url: string) => {
             const newRule: DNRRule = {
                 id: 100+counter,
@@ -73,14 +73,14 @@ chrome.runtime.onInstalled.addListener(async (details) => {
             };
             counter += 1;
             rules.push(newRule);
-        })
+        });
         // get existing rules
         const existingRules = await chrome.declarativeNetRequest.getDynamicRules();
         // remove existing rules and add base rules
         const updateRuleOptions: chrome.declarativeNetRequest.UpdateRuleOptions = {
             removeRuleIds: existingRules.map((rule) => rule.id),
             addRules: rules as chrome.declarativeNetRequest.Rule[]
-        }
+        };
         await chrome.declarativeNetRequest.updateDynamicRules(updateRuleOptions);
     }
 })
