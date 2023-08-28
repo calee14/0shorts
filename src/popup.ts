@@ -8,16 +8,17 @@ import { DNRRule } from './types'
 console.log('popup.ts');
 
 (async () => {
-    const storageObj = await chrome.storage.local.get('blockedUrls');
-    const blockedUrls: string[] = storageObj['blockedUrls'];
-    const unblockedUrls = ["||facebook.com"]// await chrome.storage.local.get('unblockedUrls');
+    const storageBlockedUrls = await chrome.storage.local.get('blockedUrls');
+    const blockedUrls: string[] = storageBlockedUrls['blockedUrls'];
+    const storageUnblockedUrls =  await chrome.storage.local.get('unblockedUrls');
+    const unblockedUrls: string[] = ['||facebook.com']; //storageUnblockedUrls['unblockedUrls']
     console.log(blockedUrls, unblockedUrls)
 
     const rules: DNRRule[] = [];
     var counter = 0;
+    // update black list of urls. unblock sites if in unblocked url array
     blockedUrls.forEach((url: string) => {
         if(unblockedUrls.indexOf(url) > -1) return;
-        console.log(url, url in unblockedUrls)
         const newRule: DNRRule = {
             id: 100+counter,
             priority: 1,
@@ -43,6 +44,40 @@ console.log('popup.ts');
     }
     await chrome.declarativeNetRequest.updateDynamicRules(updateRuleOptions);
 
+})();
+
+(async () => {
+    // ul element that will contain blocked urls
+    const list = document.getElementById('sites');
+
+    const storageBlockedUrls = await chrome.storage.local.get('blockedUrls');
+    const blockedUrls: string[] = storageBlockedUrls['blockedUrls'];
+    const storageUnblockedUrls =  await chrome.storage.local.get('unblockedUrls');
+    const unblockedUrls: string[] = storageUnblockedUrls['unblockedUrls']
+    
+    blockedUrls.forEach((url) => {
+        const container = document.createElement('div');
+        container.className = 'urlContainer';
+
+        // url label html
+        const urlLabel = document.createElement('label');
+        urlLabel.className = 'urlLabel'
+        urlLabel.innerText = url;
+        // switch html
+        const selector = `
+        <label class="switch">
+            <input class="selector" type="checkbox">
+            <span class="slider"></span>
+        </label>`;
+        const urlSwitch = document.createElement('div');
+        urlSwitch.className = 'switch';
+        urlSwitch.innerHTML = selector;
+
+        container.appendChild(urlLabel);
+        container.appendChild(urlSwitch);
+        
+        list?.appendChild(container);
+    })
 })();
 
 // sends message to content script
