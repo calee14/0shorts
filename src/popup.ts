@@ -46,6 +46,12 @@ console.log('popup.ts');
 
 })();
 
+function clickedUrl(event: Event) {
+    if(event.target instanceof HTMLInputElement) {
+        console.log(event.target.checked);
+    }
+}
+
 (async () => {
     // ul element that will contain blocked urls
     const list = document.getElementById('sites');
@@ -53,7 +59,7 @@ console.log('popup.ts');
     const storageBlockedUrls = await chrome.storage.local.get('blockedUrls');
     const blockedUrls: string[] = storageBlockedUrls['blockedUrls'];
     const storageUnblockedUrls =  await chrome.storage.local.get('unblockedUrls');
-    const unblockedUrls: string[] = storageUnblockedUrls['unblockedUrls']
+    const unblockedUrls: string[] = ['||facebook.com'] //storageUnblockedUrls['unblockedUrls'];
     
     blockedUrls.forEach((url) => {
         const container = document.createElement('div');
@@ -66,10 +72,11 @@ console.log('popup.ts');
         // switch html
         const selector = `
         <label class="switch">
-            <input class="selector" type="checkbox">
+            <input class="selector" url="${url}" type="checkbox" ${unblockedUrls.indexOf(url) !== -1 ? 'checked' : ''}>
             <span class="slider"></span>
         </label>`;
         const urlSwitch = document.createElement('div');
+        urlSwitch.addEventListener('click', clickedUrl);
         urlSwitch.className = 'switch';
         urlSwitch.innerHTML = selector;
 
