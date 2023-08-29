@@ -47,16 +47,15 @@ chrome.runtime.onMessage.addListener(
 chrome.runtime.onInstalled.addListener(async (details) => {
     if(details.reason === "install") {
         await chrome.storage.local.set({
-            blockedUrls: ['||facebook.com', '||instagram.com', '||tikok.com', '||twitter.com', '||youtube.com', '||tumblr.com', '||netflix.com', '||max.com'],
-            unblockedUrls: []
+            blockedUrls: {'||facebook.com': true, '||instagram.com': true, '||tikok.com': true, '||twitter.com': true, '||youtube.com': true, '||tumblr.com': true, '||netflix.com': true, '||max.com': true},
         });
 
         const storageObj = await chrome.storage.local.get('blockedUrls');
-        const blockedUrls: string[] = storageObj['blockedUrls'];
+        const blockedUrls: object = storageObj['blockedUrls'];
 
         const rules: DNRRule[] = [];
         var counter = 0;
-        blockedUrls.forEach((url: string) => {
+        Object.keys(blockedUrls).forEach((url: string) => {
             const newRule: DNRRule = {
                 id: 100+counter,
                 priority: 1,

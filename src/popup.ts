@@ -7,18 +7,18 @@ import { DNRRule } from './types'
 
 console.log('popup.ts');
 
-(async () => {
+async function updateBlockedSites() {
     const storageBlockedUrls = await chrome.storage.local.get('blockedUrls');
-    const blockedUrls: string[] = storageBlockedUrls['blockedUrls'];
-    const storageUnblockedUrls =  await chrome.storage.local.get('unblockedUrls');
-    const unblockedUrls: string[] = ['||facebook.com']; //storageUnblockedUrls['unblockedUrls']
-    console.log(blockedUrls, unblockedUrls)
+    const blockedUrls = storageBlockedUrls['blockedUrls'];
+    // const storageUnblockedUrls =  await chrome.storage.local.get('unblockedUrls');
+    // const unblockedUrls: string[] = ['||facebook.com']; //storageUnblockedUrls['unblockedUrls']
+    console.log(blockedUrls)
 
     const rules: DNRRule[] = [];
     var counter = 0;
     // update black list of urls. unblock sites if in unblocked url array
-    blockedUrls.forEach((url: string) => {
-        if(unblockedUrls.indexOf(url) > -1) return;
+    Object.keys(blockedUrls).forEach((url: string) => {
+        if(blockedUrls[url] === false) return;
         const newRule: DNRRule = {
             id: 100+counter,
             priority: 1,
@@ -43,12 +43,30 @@ console.log('popup.ts');
         addRules: rules as chrome.declarativeNetRequest.Rule[]
     }
     await chrome.declarativeNetRequest.updateDynamicRules(updateRuleOptions);
+};
 
+(async () => {
+    await updateBlockedSites();
 })();
 
-function clickedUrl(event: Event) {
+async function clickedUrl(event: Event) {
     if(event.target instanceof HTMLInputElement) {
-        console.log(event.target.checked);
+        try {
+            // update the local storage of blocked urls
+            const checked = event.target.checked;
+            const url = event.target.getAttribute('url') ?? '';
+            
+            const storageBlockedUrls = await chrome.storage.local.get('blockedUrls');
+            const blockedUrls = storageBlockedUrls['blockedUrls'];
+
+            blockedUrls[url] = checked;
+
+            await chrome.storage.local.set({blockedUrls: blockedUrls});
+            await updateBlockedSites();
+        } catch (error) {
+            console.error('An error occured. It is likely due to the input element not having the url attribute.');
+            console.error('Here is the error:', error);
+        }
     }
 }
 
@@ -57,22 +75,22 @@ function clickedUrl(event: Event) {
     const list = document.getElementById('sites');
 
     const storageBlockedUrls = await chrome.storage.local.get('blockedUrls');
-    const blockedUrls: string[] = storageBlockedUrls['blockedUrls'];
-    const storageUnblockedUrls =  await chrome.storage.local.get('unblockedUrls');
-    const unblockedUrls: string[] = ['||facebook.com'] //storageUnblockedUrls['unblockedUrls'];
+    const blockedUrls = storageBlockedUrls['blockedUrls'];
+    // const storageUnblockedUrls =  await chrome.storage.local.get('unblockedUrls');
+    // const unblockedUrls: string[] = ['||facebook.com'] //storageUnblockedUrls['unblockedUrls'];
     
-    blockedUrls.forEach((url) => {
+    Object.keys(blockedUrls).forEach((url: string) => {
         const container = document.createElement('div');
         container.className = 'urlContainer';
 
         // url label html
         const urlLabel = document.createElement('label');
         urlLabel.className = 'urlLabel'
-        urlLabel.innerText = url;
+        urlLabel.innerText = url.substring(2);
         // switch html
         const selector = `
         <label class="switch">
-            <input class="selector" url="${url}" type="checkbox" ${unblockedUrls.indexOf(url) !== -1 ? 'checked' : ''}>
+            <input class="selector" url="${url}" type="checkbox" ${blockedUrls[url] !== false ? 'checked' : ''}>
             <span class="slider"></span>
         </label>`;
         const urlSwitch = document.createElement('div');
