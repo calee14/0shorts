@@ -7,13 +7,14 @@
  * thus they can receive messages sent from the content.ts scripts.
  */
 
+import { BlockedUrls } from './blockedUrls';
 import { DNRRule } from './types'
 
 console.log('background.ts');
 
 chrome.declarativeNetRequest.onRuleMatchedDebug.addListener((e) => {
-    const msg = `Navigation blocked to ${e.request.url} on tab ${e.request.tabId}.`;
-    console.log(msg);
+  const msg = `Navigation blocked to ${e.request.url} on tab ${e.request.tabId}.`;
+  console.log(msg);
 });
 
 // let active = false;
@@ -35,51 +36,51 @@ chrome.declarativeNetRequest.onRuleMatchedDebug.addListener((e) => {
 
 // // recieve message from content.ts or popup.ts
 chrome.runtime.onMessage.addListener(
-    function (request, sender, sendResponse) {
-        console.log(sender.tab ?
-            "from a content script:" + sender.tab.url :
-            "from the extension");
-        if (request.greeting === "hello")
-            sendResponse({ farewell: "goodbye" });
-    }
+  function (request, sender, sendResponse) {
+    console.log(sender.tab ?
+      "from a content script:" + sender.tab.url :
+      "from the extension");
+    if (request.greeting === "hello")
+      sendResponse({ farewell: "goodbye" });
+  }
 );
 
 chrome.runtime.onInstalled.addListener(async (details) => {
-    if(details.reason === "install") {
-        await chrome.storage.local.set({
-            blockedUrls: {'||facebook.com': true, '||instagram.com': true, '||tikok.com': true, '||twitter.com': true, '||youtube.com': true, '||tumblr.com': true, '||netflix.com': true, '||max.com': true},
-        });
+  if (details.reason === "install") {
+    await chrome.storage.local.set({
+      blockedUrls: BlockedUrls,
+    });
 
-        const storageObj = await chrome.storage.local.get('blockedUrls');
-        const blockedUrls: object = storageObj['blockedUrls'];
+    const storageObj = await chrome.storage.local.get('blockedUrls');
+    const blockedUrls: object = storageObj['blockedUrls'];
 
-        const rules: DNRRule[] = [];
-        var counter = 0;
-        Object.keys(blockedUrls).forEach((url: string) => {
-            const newRule: DNRRule = {
-                id: 100+counter,
-                priority: 1,
-                action: {
-                    type: "redirect",
-                    redirect: { url: "https://google.com" }
-                },
-                condition: {
-                    urlFilter: url,
-                    resourceTypes: [
-                        "main_frame"
-                    ]
-                }
-            };
-            counter += 1;
-            rules.push(newRule);
-        });
-        // get existing rules
-        const existingRules = await chrome.declarativeNetRequest.getDynamicRules();
-        // remove existing rules and add base rules
-        const updateRuleOptions: chrome.declarativeNetRequest.UpdateRuleOptions = {
-            removeRuleIds: existingRules.map((rule) => rule.id),
-            addRules: rules as chrome.declarativeNetRequest.Rule[]
-        };
-        await chrome.declarativeNetRequest.updateDynamicRules(updateRuleOptions);
-    }
+    const rules: DNRRule[] = [];
+    var counter = 0;
+    Object.keys(blockedUrls).forEach((url: string) => {
+      const newRule: DNRRule = {
+        id: 100 + counter,
+        priority: 1,
+        action: {
+          type: "redirect",
+          redirect: { url: "https://google.com" }
+        },
+        condition: {
+          urlFilter: url,
+          resourceTypes: [
+            "main_frame"
+          ]
+        }
+      };
+      counter += 1;
+      rules.push(newRule);
+    });
+    // get existing rules
+    const existingRules = await chrome.declarativeNetRequest.getDynamicRules();
+    // remove existing rules and add base rules
+    const updateRuleOptions: chrome.declarativeNetRequest.UpdateRuleOptions = {
+      removeRuleIds: existingRules.map((rule) => rule.id),
+      addRules: rules as chrome.declarativeNetRequest.Rule[]
+    };
+    await chrome.declarativeNetRequest.updateDynamicRules(updateRuleOptions);
+  }
 })
