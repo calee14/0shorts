@@ -80,14 +80,14 @@ async function clickedUrl(event: Event) {
   // const storageUnblockedUrls =  await chrome.storage.local.get('unblockedUrls');
   // const unblockedUrls: string[] = ['||facebook.com'] //storageUnblockedUrls['unblockedUrls'];
 
-  Object.keys(blockedUrls).forEach((url: string) => {
+  Object.keys(blockedUrls).forEach((url: string, index: number) => {
     const container = document.createElement('div');
     container.className = 'urlContainer';
 
     // url label html
     const urlLabel = document.createElement('label');
     urlLabel.className = 'urlLabel'
-    urlLabel.innerText = url.substring(2);
+    urlLabel.innerText = index.toString() // url.substring(2);
     // switch html
     const selector = `
         <label class="switch">
